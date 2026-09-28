@@ -39,3 +39,15 @@ DELETE http://localhost:8080/api/rooms/4
 
 ### 11. Delete again (expect 404)
 DELETE http://localhost:8080/api/rooms/4
+
+### 12. POST with capacity 400 (expect 400)
+POST http://localhost:8080/api/rooms
+Content-Type: application/json
+
+{ "name": "Rooftop", "capacity": 400 }
+
+### 13. PUT /api/rooms/1 with capacity 50 → 400
+PUT http://localhost:8080/api/rooms/1
+Content-Type: application/json
+
+{ "name": "Ghost", "capacity": 400 }

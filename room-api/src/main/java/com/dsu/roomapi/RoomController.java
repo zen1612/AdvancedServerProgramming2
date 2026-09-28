@@ -1,9 +1,7 @@
 package com.dsu.roomapi;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,11 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/rooms")
 public class RoomController {
 
-    private final InMemoryRoomRepository repository;
     private final RoomService roomService;
 
-    public RoomController(InMemoryRoomRepository repository, RoomService roomService) {
-        this.repository = repository;
+    public RoomController(RoomService roomService) {
         this.roomService = roomService;
     }
 
@@ -36,36 +32,42 @@ public class RoomController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Room> findOne(@PathVariable Long id) {
-        return repository.findById(id)
+        return roomService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<Room> create(@RequestBody RoomCreateRequest request) {
-        Room room = repository.save(new Room(null, request.name(), request.capacity()));
-        return ResponseEntity
-                .created(URI.create("/api/rooms/" + room.id()))
-                .body(room);
+        try {
+            Room room = roomService.create(
+                    request.name(), request.capacity());
+
+            return ResponseEntity
+                    .created(URI.create("/api/rooms/" + room.id()))
+                    .body(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Room> replace(@PathVariable Long id,
                                         @RequestBody RoomCreateRequest request) {
-        if (repository.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
+        try {
+            return roomService.replace(
+                            id, request.name(), request.capacity())
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
-
-        Room updated = repository.save(
-                new Room(id, request.name(), request.capacity())
-        );
-
-        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boolean removed = repository.deleteById(id);
+        boolean removed = roomService.deleteById(id);
         return removed ? ResponseEntity.noContent().build()
                        : ResponseEntity.notFound().build();
     }
