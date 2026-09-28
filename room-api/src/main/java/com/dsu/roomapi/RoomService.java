@@ -7,7 +7,7 @@ import java.util.Optional;
 
 @Service
 public class RoomService {
-    private final InMemoryRoomRepository roomRepository;
+    private final RoomRepository roomRepository;
 
     public RoomService(InMemoryRoomRepository roomRepository) {
         this.roomRepository = roomRepository;

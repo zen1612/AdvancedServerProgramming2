@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Repository
-public class InMemoryRoomRepository {
+public class InMemoryRoomRepository implements RoomRepository {
     private final List<Room> rooms = new ArrayList<>(List.of(
             new Room(1L, "Seminar A", 8),
             new Room(2L, "Study Pod", 4),
