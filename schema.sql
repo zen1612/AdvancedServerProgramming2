@@ -16,9 +16,9 @@ CREATE TABLE reservations(
 
 INSERT into room (name, capacity)
 VALUES
-('Seminar A', 8),
-('Study Pod', 4),
-('Rooftop Room', 12);
+    ('Seminar A', 8),
+    ('Study Pod', 4),
+    ('Rooftop Room', 12);
 
 INSERT into reservations (room_id, reserved_by, start_time, end_time)
 VALUES
@@ -43,7 +43,7 @@ SELECT
     start_time,
     end_time
 FROM reservations res
-         INNER JOIN room r ON r.id = res.room_id
+         INNER JOIN room r ON r.id = res.room_id;
 --Q4
 SELECT * FROM(
                  SELECT
@@ -57,3 +57,33 @@ SELECT * FROM(
                  AS joined
 WHERE name = 'Seminar A' AND start_time < '2026-10-07'
 --Q5
+SELECT
+    r.id,
+    r.name,
+    COUNT(res.id) AS reservation_count
+FROM room r
+         INNER JOIN reservations res ON r.id = res.room_id
+GROUP BY r.id, r.name;
+--Q6
+SELECT
+    r.id,
+    r.name,
+    COUNT(res.id) AS reservation_count
+FROM room r
+         LEFT JOIN reservations res ON r.id = res.room_id
+GROUP BY r.id, r.name;
+--Q7
+SELECT
+    r.id,
+    r.name
+FROM room r
+         LEFT JOIN reservations res ON r.id = res.room_id
+WHERE res.id IS NULL;
+--Q8
+SELECT
+    r.id,
+    r.name
+FROM room r
+         LEFT JOIN reservations res ON r.id = res.room_id
+GROUP BY r.id, r.name
+HAVING COUNT(res.id) > 2;
