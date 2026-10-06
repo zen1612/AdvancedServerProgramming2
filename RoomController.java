@@ -40,11 +40,9 @@ public class RoomController {
     @PostMapping
     public ResponseEntity<Room> create(@RequestBody RoomCreateRequest request) {
         try {
-            Room room = roomService.create(
-                    request.name(), request.capacity());
-
+            Room room = roomService.create(request.name(), request.capacity());
             return ResponseEntity
-                    .created(URI.create("/api/rooms/" + room.id()))
+                    .created(URI.create("/api/rooms/" + room.getId()))
                     .body(room);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -55,11 +53,9 @@ public class RoomController {
     public ResponseEntity<Room> replace(@PathVariable Long id,
                                         @RequestBody RoomCreateRequest request) {
         try {
-            return roomService.replace(
-                            id, request.name(), request.capacity())
+            return roomService.replace(id, request.name(), request.capacity())
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
-
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -67,8 +63,8 @@ public class RoomController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boolean removed = roomService.deleteById(id);
-        return removed ? ResponseEntity.noContent().build()
-                       : ResponseEntity.notFound().build();
+        return roomService.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }
